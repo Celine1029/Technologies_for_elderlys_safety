@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银安盾 · 技术演示台 | 具身智能赋能老年人财产权益全生命周期守护平台</title>
+<style>
+:root{
+  --red:#C7000B; --red-soft:#FDECEC; --navy:#0F2A4A; --navy2:#16375E;
+  --blue:#1F6FB2; --blue-soft:#EAF3FB; --green:#2E7D32; --green-soft:#E8F5E9;
+  --amber:#B26A00; --amber-soft:#FFF6E5; --purple:#5B3E9B; --purple-soft:#F0EBFA;
+  --line:#E2E9F1; --ink:#16232F; --muted:#6B7A8C; --bg:#F4F7FB;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --cn:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--cn);font-size:14px;
+     display:flex;flex-direction:column;gap:12px;padding:12px;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:13px}
+button:disabled{opacity:.5;cursor:not-allowed}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#C6D3E0;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+.topbar{background:linear-gradient(100deg,var(--navy) 0%,var(--navy2) 60%,#1B4C7E 100%);
+  border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;box-shadow:0 6px 20px rgba(15,42,74,.18)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:46px;height:46px;border-radius:12px;background:var(--red);color:#fff;font-size:22px;
+  font-weight:700;display:grid;place-items:center;box-shadow:0 3px 10px rgba(199,0,11,.4);flex:none}
+.brand h1{color:#fff;font-size:19px;font-weight:700;letter-spacing:.5px}
+.brand h1 span{font-weight:400;font-size:13px;color:#9FC3E8;margin-left:6px}
+.brand p{color:#8FB4D8;font-size:12px;margin-top:3px}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{padding:6px 13px;border-radius:20px;font-size:12.5px;font-weight:600;
+  background:rgba(255,255,255,.12);color:#DCEBF9;border:1px solid rgba(255,255,255,.22);white-space:nowrap}
+.pill.on{background:rgba(46,125,50,.35);color:#C8F0CA;border-color:rgba(120,220,130,.5)}
+.pill.off{background:rgba(178,106,0,.3);color:#FFE2B0;border-color:rgba(255,200,120,.45)}
+.btn{padding:8px 15px;border-radius:9px;background:rgba(255,255,255,.14);color:#fff;
+  font-weight:600;border:1px solid rgba(255,255,255,.22);transition:.15s}
+.btn:hover{background:rgba(255,255,255,.24)}
+.btn.primary{background:var(--red);border-color:#E8404A;box-shadow:0 3px 10px rgba(199,0,11,.35)}
+.btn.primary:hover{background:#E00D18}
+
+.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:12px;min-height:0;flex:none}
+@media(max-width:1180px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(15,42,74,.07);
+  border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+.term-head{background:linear-gradient(100deg,#132F52,#1D4C7C);padding:13px 16px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bot{position:relative;width:52px;height:52px;flex:none}
+.bot .face{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 28%,#5FC8FF,#2E86D6 60%,#1B5E96);
+  display:grid;place-items:center;font-size:24px;box-shadow:0 0 0 3px rgba(95,200,255,.25);z-index:2}
+.bot .ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(95,200,255,.65);opacity:0}
+.bot.speaking .ring,.bot.listening .ring{animation:pulse 1.6s ease-out infinite}
+.bot.thinking .ring{animation:pulse 1s ease-out infinite;border-color:rgba(255,205,90,.75)}
+.bot.recording .ring{animation:pulse 1.1s ease-out infinite;border-color:rgba(255,120,120,.85)}
+@keyframes pulse{0%{transform:scale(1);opacity:.85}100%{transform:scale(1.85);opacity:0}}
+.term-title{color:#fff;font-size:15px;font-weight:700}
+.term-sub{color:#93BBE0;font-size:11.5px;margin-top:3px}
+.metrics{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+.metric{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:8px;
+  padding:4px 9px;text-align:center;min-width:62px}
+.metric b{display:block;color:#fff;font-size:12.5px;font-family:var(--mono)}
+.metric span{color:#8FB4D8;font-size:10px}
+
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;
+  background:linear-gradient(#FBFDFF,#F5F9FD);min-height:340px;max-height:52vh}
+.msg{display:flex;gap:9px;max-width:92%}
+.msg .av{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;font-size:15px}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg.user .av{background:#D8E6F5}
+.msg.bot .av{background:linear-gradient(135deg,#2E86D6,#1B5E96);color:#fff}
+.bubble{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 13px;
+  line-height:1.75;box-shadow:0 1px 3px rgba(15,42,74,.05);font-size:14px}
+.msg.user .bubble{background:#E7F1FB;border-color:#C8DDF2}
+.bubble .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:7px;
+  border-top:1px dashed #E4EBF2;font-size:11px;color:var(--muted)}
+.tag{padding:2px 7px;border-radius:5px;background:#F0F4F9;border:1px solid #E1E9F1;
+  font-family:var(--mono);font-size:10.5px;color:#3C5570}
+.tag.intent{background:#EAF3FB;border-color:#C8DDF2;color:#1B5E96}
+.tag.rag{background:var(--purple-soft);border-color:#DCD1F2;color:var(--purple)}
+.tag.risk-L1{background:var(--amber-soft);border-color:#F5DFB0;color:var(--amber)}
+.tag.risk-L2{background:#FFEDD9;border-color:#F5C99B;color:#A55400}
+.tag.risk-L3{background:var(--red-soft);border-color:#F5BFC2;color:var(--red);font-weight:700}
+
+.rcard{border-radius:12px;border:1px solid var(--line);overflow:hidden;max-width:94%;align-self:flex-start}
+.rcard .rh{padding:8px 13px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;color:#fff}
+.rcard .rb{padding:11px 13px;background:#fff;font-size:13px;line-height:1.85}
+.rcard.recv .rh{background:linear-gradient(90deg,#2E7D32,#43A047)}
+.rcard.risk .rh{background:linear-gradient(90deg,#A50009,#C7000B)}
+.rcard.chain .rh{background:linear-gradient(90deg,#4A3390,#6B4FC4)}
+.rcard.info .rh{background:linear-gradient(90deg,#1B5E96,#2E86D6)}
+.rcard.warn .rh{background:linear-gradient(90deg,#9A5B00,#C77C00)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12.5px}
+.kv dt{color:var(--muted)}
+.kv dd{font-family:var(--mono);color:var(--ink);word-break:break-all}
+.hash{font-family:var(--mono);font-size:11px;color:#4A3390;word-break:break-all}
+
+.composer{border-top:1px solid var(--line);background:#fff;padding:11px 14px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.chip{background:#F2F7FC;border:1px solid #D9E6F2;color:#2C5B8A;border-radius:16px;
+  padding:5px 11px;font-size:12px;transition:.15s;white-space:nowrap}
+.chip:hover{background:#E3EFFA;border-color:#B6D3EC}
+.chip.red{background:var(--red-soft);border-color:#F3C6C9;color:var(--red)}
+.chip.red:hover{background:#FBDDDD}
+.chip.green{background:var(--green-soft);border-color:#C3E2C6;color:var(--green)}
+.chip.green:hover{background:#DBEFDD}
+.inrow{display:flex;gap:9px;align-items:center}
+.inrow input[type=text]{flex:1;padding:11px 14px;border-radius:10px;border:1px solid #D5E0EB;
+  font-size:14px;font-family:inherit;outline:none;background:#FAFCFE}
+.inrow input[type=text]:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(31,111,178,.1)}
+.iconbtn{width:44px;height:44px;border-radius:11px;background:#EAF3FB;color:#1B5E96;font-size:19px;
+  display:grid;place-items:center;transition:.15s;flex:none}
+.iconbtn:hover{background:#D8E9F8}
+.iconbtn.rec{background:var(--red);color:#fff;animation:blink 1.1s infinite}
+@keyframes blink{50%{opacity:.55}}
+.send{padding:0 20px;height:44px;border-radius:11px;background:var(--navy);color:#fff;font-weight:700;
+  font-size:14px;flex:none;transition:.15s}
+.send:hover{background:#1B4C7E}
+
+.tabs{display:flex;border-bottom:1px solid var(--line);background:#FAFCFE;overflow-x:auto}
+.tab{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:600;border-bottom:2.5px solid transparent;
+  white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--navy)}
+.tab.active{color:var(--navy);border-bottom-color:var(--red);background:#fff}
+.panes{flex:1;overflow-y:auto;padding:13px;min-height:340px;max-height:52vh}
+.pane{display:none}.pane.active{display:block}
+.empty{text-align:center;color:#9AAABB;padding:34px 12px;font-size:12.5px;line-height:1.9}
+.item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:9px;background:#fff;
+  border-left:3.5px solid #C6D3E0;font-size:12.5px;line-height:1.7;animation:slide .3s ease}
+@keyframes slide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.item.L3{border-left-color:var(--red);background:#FFFBFB}
+.item.L2{border-left-color:#E08A00;background:#FFFCF7}
+.item.L1{border-left-color:#D9B44A}
+.item .it-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:5px}
+.item .it-head b{font-size:12.5px}
+.item .ts{color:#9AAABB;font-family:var(--mono);font-size:10.5px}
+.item .sug{color:var(--muted);margin-top:5px;padding-top:5px;border-top:1px dashed #EAF0F6;font-size:11.5px}
+.chain-item{border:1px solid #E4DEF4;background:#FCFAFF;border-radius:10px;padding:10px 12px;margin-bottom:9px;
+  font-size:12px;animation:slide .3s ease}
+.chain-item .ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.chain-item .ch-head b{color:var(--purple)}
+.hashrow{font-family:var(--mono);font-size:10.5px;color:#5C6B7A;word-break:break-all;
+  display:flex;gap:6px;padding:1px 0}
+.hashrow span:first-child{color:#9AAABB;flex:none;width:62px}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px;align-items:center}
+.tbtn{padding:6px 12px;border-radius:8px;background:#F0F5FA;border:1px solid #DCE6F0;
+  color:#2C5B8A;font-size:12px;font-weight:600}
+.tbtn:hover{background:#E3EFFA}
+.port{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff;font-size:12.5px;line-height:1.7}
+.port b{display:block;margin-bottom:4px}
+.port.owner{border-left:3.5px solid var(--green)}
+.port.family{border-left:3.5px solid var(--blue)}
+.port.bank{border-left:3.5px solid var(--amber)}
+.port.law{border-left:3.5px solid var(--purple)}
+
+.logs{background:#0C1A2B;border-radius:14px;padding:12px 16px;box-shadow:0 2px 10px rgba(15,42,74,.16)}
+.logs-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.logs-head h2{color:#DCEBF9;font-size:13px;font-weight:700}
+.logs-head .hint{color:#5E7E9E;font-size:11px}
+.logs-head button{margin-left:auto;color:#7FA6C9;font-size:11.5px;padding:4px 10px;
+  border:1px solid #24405E;border-radius:7px}
+.logs-head button:hover{color:#fff;border-color:#3C6A96}
+#logBody{height:172px;overflow-y:auto;font-family:var(--mono);font-size:11.5px;line-height:1.85}
+.logline{display:flex;gap:8px;animation:slide .2s ease}
+.logline .t{color:#4A6B8A;flex:none}
+.logline .layer{flex:none;padding:0 6px;border-radius:4px;font-size:10.5px;font-weight:700}
+.LY-感知{background:#123A5C;color:#7FD0FF}
+.LY-引擎{background:#4A0D12;color:#FF9AA2}
+.LY-存证{background:#10321A;color:#84E39B}
+.LY-端口{background:#2A1E52;color:#BFA8FF}
+.LY-系统{background:#2A3644;color:#A9BDD1}
+.logline .m{color:#C3D6E8}
+
+.mask{position:fixed;inset:0;background:rgba(9,22,38,.62);backdrop-filter:blur(3px);
+  display:none;place-items:center;z-index:100;padding:16px}
+.mask.show{display:grid}
+.modal{background:#fff;border-radius:16px;width:min(560px,96vw);max-height:92vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.modal-head h3{font-size:15.5px;color:var(--navy)}
+.modal-head .x{margin-left:auto;color:#9AAABB;font-size:22px;line-height:1;padding:0 4px}
+.modal-body{padding:18px 20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.mbtn{padding:10px 20px;border-radius:10px;font-weight:700;font-size:13.5px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.mbtn:hover{background:#F6F9FC}
+.mbtn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+.mbtn.pri:hover{background:#1B4C7E}
+.mbtn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+.mbtn.success{background:#2E7D32;color:#fff;border-color:#2E7D32}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:#3C5570;margin-bottom:6px}
+.field input,.field select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid #D5E0EB;
+  font-size:13px;font-family:inherit;outline:none;background:#FAFCFE}
+.field input:focus,.field select:focus{border-color:var(--blue);background:#fff}
+.field .tip{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.6}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.preset{padding:5px 10px;border-radius:7px;background:#F0F5FA;border:1px solid #DCE6F0;font-size:11.5px;color:#2C5B8A}
+.preset:hover{background:#E3EFFA}
+.rowsplit{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.rowsplit{grid-template-columns:1fr}}
+
+.face-stage{position:relative;width:220px;height:220px;margin:0 auto 14px;border-radius:16px;
+  overflow:hidden;background:#0E1B2C;display:grid;place-items:center}
+.face-stage video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.face-ph{color:#4E6B89;font-size:12px;text-align:center;padding:16px;line-height:1.8}
+.scanline{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#4FD2FF,transparent);
+  box-shadow:0 0 14px 3px rgba(79,210,255,.65);animation:scan 1.9s ease-in-out infinite}
+@keyframes scan{0%,100%{top:8%}50%{top:90%}}
+.face-ring{position:absolute;inset:14px;border-radius:14px;border:2px dashed rgba(79,210,255,.45)}
+.face-ok{position:absolute;inset:0;background:rgba(46,125,50,.86);color:#fff;display:grid;place-items:center;
+  font-size:17px;font-weight:700;opacity:0;transition:.3s}
+.face-ok.show{opacity:1}
+.gate-list{list-style:none;font-size:13px}
+.gate-list li{padding:8px 0;border-bottom:1px dashed #EAF0F6;display:flex;gap:9px;align-items:flex-start}
+.gate-list li:last-child{border:none}
+.gate-list .ok{color:var(--green);font-weight:700}
+.gate-list .wait{color:#B9C6D4}
+.warnbox{background:var(--red-soft);border:1px solid #F5BFC2;border-radius:10px;padding:12px 14px;
+  color:#8C0009;font-size:13px;line-height:1.85;margin-bottom:14px}
+.infobox{background:var(--blue-soft);border:1px solid #C8DDF2;border-radius:10px;padding:12px 14px;
+  color:#134B78;font-size:12.5px;line-height:1.85;margin-bottom:14px}
+.banner{background:#FFF6E5;border:1px solid #F5DFB0;color:#8A5A00;border-radius:11px;padding:10px 15px;
+  font-size:12.5px;line-height:1.7;display:none}
+.banner.show{display:block}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.rec-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#E53935;
+  animation:blink 1s infinite;vertical-align:1px;margin-right:5px}
+</style>
+</head>
+<body>
+
+<div class="banner" id="fileBanner">
+  ⚠️ 当前以 <b>本地文件方式</b> 打开，语音识别与接口代理不可用。答辩演示建议双击运行 <b>启动演示.bat</b>，
+  通过 <b>http://127.0.0.1:8787</b> 打开本页面以启用全部能力。
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">盾</div>
+    <div>
+      <h1>银安盾<span>技术演示台</span></h1>
+      <p>具身智能赋能老年人财产权益全生命周期守护平台 · 四层架构实机演示</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="pill off" id="modePill">离线演示模式</div>
+    <button class="btn" id="btnSettings">⚙ 接口设置</button>
+    <button class="btn primary" id="btnAuto">▶ 自动演示</button>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- ================= 具身终端 ================= -->
+  <section class="card">
+    <div class="term-head">
+      <div class="bot" id="botAvatar"><div class="ring"></div><div class="face">🤖</div></div>
+      <div>
+        <div class="term-title">银安盾 · 居家财产守护终端</div>
+        <div class="term-sub" id="botStatus">待机中 · 说“小安”即可唤醒</div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b id="mModel">OFFLINE</b><span>模型</span></div>
+        <div class="metric"><b id="mLatency">--</b><span>时延</span></div>
+        <div class="metric"><b id="mIntent">--</b><span>本轮意图</span></div>
+        <div class="metric"><b id="mRisk">L0</b><span>风险等级</span></div>
+        <div class="metric"><b id="mChain">0</b><span>存证条数</span></div>
+      </div>
+    </div>
+
+    <div class="chat" id="chat"></div>
+
+    <div class="composer">
+      <div class="chips" id="chips"></div>
+      <div class="inrow">
+        <button class="iconbtn" id="btnMic" title="语音输入">🎤</button>
+        <button class="iconbtn" id="btnTTS" title="语音播报开关">🔊</button>
+        <input type="text" id="input" placeholder="对终端说点什么…（例如：帮我看看这个养老投资项目靠不靠谱）" autocomplete="off">
+        <button class="send" id="btnSend">发送</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 后台 ================= -->
+  <section class="card">
+    <div class="tabs">
+      <button class="tab active" data-pane="risk">🛡 风险预警</button>
+      <button class="tab" data-pane="ledger">💳 资金操作</button>
+      <button class="tab" data-pane="chain">🔗 存证档案</button>
+      <button class="tab" data-pane="multi">🤝 多方协同</button>
+      <button class="tab" data-pane="arch">🏛 技术架构</button>
+    </div>
+    <div class="panes">
+      <div class="pane active" id="pane-risk">
+        <div class="empty" id="riskEmpty">暂无风险事件<br>终端正在实时听取通话、监测资金动作</div>
+        <div id="riskList"></div>
+      </div>
+      <div class="pane" id="pane-ledger">
+        <div class="toolbar">
+          <button class="tbtn" id="btnExport">📦 导出证据包</button>
+          <button class="tbtn" id="btnReset">↺ 重置演示数据</button>
+        </div>
+        <div class="empty" id="ledgerEmpty">暂无资金操作记录</div>
+        <div id="ledgerList"></div>
+      </div>
+      <div class="pane" id="pane-chain">
+        <div class="toolbar">
+          <button class="tbtn" id="btnVerify">✓ 校验文件有没有被改过</button>
+          <span class="tag" id="verifyTag" style="align-self:center">未校验</span>
+        </div>
+        <div class="empty" id="chainEmpty">存证档案为空<br>完成一次法律文书录制或资金操作后会自动存证</div>
+        <div id="chainList"></div>
+      </div>
+      <div class="pane" id="pane-multi">
+        <div class="infobox">四个端口相互独立，按“谁需要、给多少、要授权”的原则开放。<b>老人本人是唯一有权授权的人。</b></div>
+        <div class="port owner"><b>👵 老人端</b>能看到：自己的全部档案。能做的：授权他人调取、随时删除自己的存证文件。</div>
+        <div class="port family"><b>👨‍👩‍👧 家属提醒端</b>能看到：风险预警、资金变动通知、办事结果。能做的：查看和确认，<b>不能代替老人操作资金</b>。</div>
+        <div class="port bank"><b>🏦 银行风控端</b>能看到：风险事件、拦截记录。用于及时止损和客诉处理，看不到法律存证内容。</div>
+        <div class="port law"><b>⚖️ 法律服务与公证端</b>能看到：经老人授权的存证档案。可以调取证据包，用于公证、鉴定、诉讼参考。</div>
+        <div class="toolbar" style="margin-top:12px"><span class="tag" style="align-self:center">调取与授权记录</span></div>
+        <div class="empty" id="authEmpty">暂无调取记录</div>
+        <div id="authList"></div>
+      </div>
+      <div class="pane" id="pane-arch"><div id="archView"></div></div>
+    </div>
+  </section>
+</main>
+
+<section class="logs">
+  <div class="logs-head">
+    <h2>系统链路日志</h2>
+    <span class="hint">每一层都留痕 · 事后可查、可回放</span>
+    <button id="btnClearLog">清空</button>
+  </div>
+  <div id="logBody"></div>
+</section>
+
+<!-- ================= 接口设置 ================= -->
+<div class="mask" id="maskSettings">
+  <div class="modal">
+    <div class="modal-head"><h3>⚙ 大模型接口设置</h3><button class="x" data-close>×</button></div>
+    <div class="modal-body">
+      <div class="field">
+        <label>接入方式</label>
+        <select id="cfgMode">
+          <option value="offline">离线演示模式 —— 内置规则引擎，不用联网（答辩保底）</option>
+          <option value="proxy">本地代理模式 —— 推荐：经本地服务转发，密钥不出本机（需运行 启动演示.bat）</option>
+          <option value="direct">浏览器直连模式 —— 直接调用 OpenAI 兼容接口（需服务端支持跨域）</option>
+        </select>
+        <div class="tip" id="modeTip"></div>
+      </div>
+      <div class="field">
+        <label>服务商快捷填充</label>
+        <div class="presets" id="presets"></div>
+      </div>
+      <div class="field">
+        <label>接口地址 Base URL</label>
+        <input type="text" id="cfgBase" placeholder="https://api.deepseek.com/v1">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input type="password" id="cfgKey" placeholder="sk-...（只保存在本机浏览器里，不会上传到第三方）">
+        <div class="tip">若通过本地代理启动、且服务端已配置环境变量，此处可留空。</div>
+      </div>
+      <div class="rowsplit">
+        <div class="field"><label>模型名称</label><input type="text" id="cfgModel" placeholder="deepseek-chat"></div>
+        <div class="field"><label>Temperature</label><input type="text" id="cfgTemp" placeholder="0.2"></div>
+      </div>
+      <div class="infobox" style="margin-bottom:0">
+        <b>系统提示词和知识库由本页自动注入</b>：每次对话先做一次知识库查找，把找到的片段和账户情况一起送给大模型，
+        并要求它只返回结构化结果（意图 / 关键信息 / 话术 / 风险提示 / 引用来源）。
+        大模型只负责“听懂”和“说清楚”，<b>真正的风险判断和资金动作由确定性代码完成</b>。
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn" id="btnTest">测试连接</button>
+      <button class="mbtn pri" id="btnSaveCfg">保存并应用</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 本人核验 ================= -->
+<div class="mask" id="maskFace">
+  <div class="modal">
+    <div class="modal-head"><h3>🔐 第二道关 · 本人核验（人脸 + 声纹）</h3></div>
+    <div class="modal-body">
+      <div class="face-stage" id="faceStage">
+        <div class="face-ph" id="facePh">正在唤起摄像头…<br><span style="font-size:11px">（没有摄像头也可以点下面的按钮完成模拟核验）</span></div>
+        <div class="face-ring"></div>
+        <div class="scanline"></div>
+        <div class="face-ok" id="faceOk">✓ 核验通过</div>
+      </div>
+      <div id="faceCtx"></div>
+      <ul class="gate-list" id="gateList"></ul>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn" id="btnFaceCancel">取消</button>
+      <button class="mbtn pri" id="btnFaceOpen">开启摄像头</button>
+      <button class="mbtn success" id="btnFaceOk">确认是本人</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 家属确认 ================= -->
+<div class="mask" id="maskChild">
+  <div class="modal">
+    <div class="modal-head"><h3>👨‍👩‍👧 第三道关 · 家属确认</h3></div>
+    <div class="modal-body">
+      <div class="warnbox" id="childWarn"></div>
+      <ul class="gate-list" id="childGate"></ul>
+      <div class="infobox" style="margin-top:14px;margin-bottom:0">
+        家属端是“<b>能看、能确认，但不能替老人动钱</b>”。15 分钟内没有确认，这笔操作自动作废。
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn danger" id="btnChildReject">不同意</button>
+      <button class="mbtn success" id="btnChildOk">同意放行</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 授权调取 ================= -->
+<div class="mask" id="maskAuth">
+  <div class="modal">
+    <div class="modal-head"><h3>📄 存证调取 · 需要老人本人授权</h3></div>
+    <div class="modal-body">
+      <div class="infobox" id="authWho"></div>
+      <ul class="gate-list" id="authGate"></ul>
+      <div class="warnbox" style="margin-top:14px;margin-bottom:0">
+        未获得授权的调取请求会被直接拒绝。每一次授权和调取都会记入档案，谁在什么时候看过什么，全部留痕。
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn danger" id="btnAuthDeny">不同意</button>
+      <button class="mbtn success" id="btnAuthOk">同意授权</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   银安盾 · 技术演示台
+   四层架构对应关系：
+     交互感知层      -> 语音识别/播报、人脸核验、录制界面
+     智能引擎层      -> 知识库查找 + 大模型理解 + 金融风险规则 + 法律录制引导 + 交易安全网关
+     存证数据层      -> SHA256 哈希值 + 时间戳、分级权限、校验与证据包
+     多方应用端口层  -> 老人端 / 家属端 / 银行风控端 / 法律服务与公证端
+   ========================================================================= */
+
+/* ---------------- 0. 通用工具 ---------------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const now = () => new Date();
+const fmtTime = d => d.toTimeString().slice(0,8);
+const fmtDT   = d => d.toLocaleString('zh-CN',{hour12:false});
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid = p => p+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
+
+/* ---- SHA256（纯 JS 实现，本地文件方式打开也能用） ---- */
+const SHA256 = (()=>{
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+  0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+  0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+  0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+  0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+  0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+  0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+  0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const rr=(x,n)=>(x>>>n)|(x<<(32-n));
+  return function sha256(msg){
+    const b=new TextEncoder().encode(msg), l=b.length;
+    const total=Math.ceil((l+9)/64)*64;
+    const buf=new Uint8Array(total); buf.set(b); buf[l]=0x80;
+    const dv=new DataView(buf.buffer);
+    const bits=l*8; dv.setUint32(total-8,Math.floor(bits/4294967296)); dv.setUint32(total-4,bits>>>0);
+    const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const w=new Uint32Array(64);
+    for(let i=0;i<total;i+=64){
+      for(let t=0;t<16;t++) w[t]=dv.getUint32(i+t*4);
+      for(let t=16;t<64;t++){
+        const a=w[t-15],c=w[t-2];
+        const s0=rr(a,7)^rr(a,18)^(a>>>3), s1=rr(c,17)^rr(c,19)^(c>>>10);
+        w[t]=(w[t-16]+s0+w[t-7]+s1)>>>0;
+      }
+      let [a,b2,c2,d,e,f,g,h]=H;
+      for(let t=0;t<64;t++){
+        const S1=rr(e,6)^rr(e,11)^rr(e,25), ch=(e&f)^(~e&g);
+        const t1=(h+S1+ch+K[t]+w[t])>>>0;
+        const S0=rr(a,2)^rr(a,13)^rr(a,22), mj=(a&b2)^(a&c2)^(b2&c2);
+        const t2=(S0+mj)>>>0;
+        h=g;g=f;f=e;e=(d+t1)>>>0;d=c2;c2=b2;b2=a;a=(t1+t2)>>>0;
+      }
+      H[0]=(H[0]+a)>>>0;H[1]=(H[1]+b2)>>>0;H[2]=(H[2]+c2)>>>0;H[3]=(H[3]+d)>>>0;
+      H[4]=(H[4]+e)>>>0;H[5]=(H[5]+f)>>>0;H[6]=(H[6]+g)>>>0;H[7]=(H[7]+h)>>>0;
+    }
+    return H.map(x=>x.toString(16).padStart(8,'0')).join('');
+  };
+})();
+
+/* 中文数字：金额双读用（2000 读“两千元”，不是“二千元”） */
+function _cnNum(n){
+  const d='零一二三四五六七八九';
+  n=Math.floor(n);
+  if(n<0) return String(n);
+  if(n<10) return d[n];
+  if(n<20) return '十'+(n%10?d[n%10]:'');
+  if(n<100) return d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:'');
+  if(n<1000){const r=n%100;return d[Math.floor(n/100)]+'百'+(r?(r<10?'零'+d[r]:_cnNum(r)):'');}
+  if(n<10000){const r=n%1000;return d[Math.floor(n/1000)]+'千'+(r?(r<100?'零'+_cnNum(r):_cnNum(r)):'');}
+  return String(n);
+}
+const cnNum = n => _cnNum(n).replace(/二千/g,'两千').replace(/二百/g,'两百');
+const moneyRead = n => `${n}元，也就是${cnNum(n)}元`;
+
+/* ---------------- 1. 基础数据 ---------------- */
+const ACCOUNT = {
+  name:'张桂兰', age:76, customerId:'6222 **** **** 8891',
+  balance: 86432.15,
+  pension:{ yearLimit:12000, paid:6000 },
+  singleLimit: 5000, dayLimit: 5000, dayUsed: 0,
+  knownPayees:['中国移动话费','社区食堂','市第一人民医院'],
+  hasWill:false,
+};
+
+/* 知识库：全部来自公开政策文件、公开案例与工行公开资料 */
+const RAG_KB = [
+  {id:'KB-FRAUD-01', title:'养老领域非法集资典型手法（公安部公布案例）', kw:'养老 投资 项目 集资 高额回报 医养结合 预付卡 康养旅游 养老院 床位',
+   text:'公安部2025年8月公布5起养老领域非法集资犯罪典型案例，涉案老年人占比高达80%—95%。主要手法包括：承诺高额回报吸收资金、以“医养结合”名义办卡收费、以销售保健品为名非法集资、预付卡充值返利、低价康养旅游诱导投资。凡承诺保本高息、要求向个人账户转账的，高度疑似非法集资。'},
+  {id:'KB-FRAUD-02', title:'冒充公检法类诈骗的识别要点', kw:'安全账户 涉嫌洗钱 涉案 公检法 检察院 法院 冻结 资金核查 验证码 通缉',
+   text:'公安机关、检察院、法院不会通过电话、QQ、微信办案，不存在所谓“安全账户”“资金核查账户”。凡要求转账至陌生账户、索要短信验证码、要求共享屏幕或下载指定软件的，均为诈骗。'},
+  {id:'KB-FRAUD-03', title:'保健品与虚假理财宣传的识别要点', kw:'保健品 包治百病 讲座 会销 返利 刷单 高息 理财 免费领',
+   text:'保健食品不是药品，不能替代药物治疗疾病，宣称“包治百病”属违法宣传。以免费体检、免费旅游、专家讲座为名推销高价保健品，或承诺“高息返利”的理财，是涉老诈骗的常见形式。'},
+  {id:'KB-LAW-01', title:'录音录像形式订立遗嘱的要求（民法典）', kw:'遗嘱 录音录像 见证人 民法典 订立 形式 财产',
+   text:'《民法典》规定，以录音录像形式立的遗嘱，应当有两个以上见证人在场见证，遗嘱人和见证人应当在录音录像中记录姓名或肖像以及年、月、日。自书遗嘱由遗嘱人亲笔书写、签名并注明年、月、日。'},
+  {id:'KB-LAW-02', title:'法律文书存证的自愿性核验要求', kw:'自愿 胁迫 诱导 意识 清晰 声明 存证 录制 真实意愿',
+   text:'本系统在录制前须完成三项核验：是否为本人自愿、是否受到他人胁迫或诱导、是否清楚所立文书的法律后果。核验问答与音视频一并固定存证，用于说明订立文书时的真实意愿与精神状态。'},
+  {id:'KB-LAW-03', title:'司法存证规则对电子数据的要求', kw:'区块链 存证 电子数据 在线诉讼 证据 篡改 核验 法院',
+   text:'《人民法院在线诉讼规则》（2021年施行）明确：当事人提交的电子数据，通过区块链技术存储且经技术核验一致的，人民法院可以认定该电子数据上链后未经篡改。存证材料的证明力取决于来源可靠、过程完整、可技术核验。'},
+  {id:'KB-BANK-01', title:'工商银行养老金融适老化服务', kw:'工商银行 养老金融 长辈 适老 网点 幸福生活版 服务',
+   text:'工商银行已建成9300余家养老金融特色网点，手机银行“幸福生活版”覆盖55岁以上客户778万户，围绕长辈客群构建更便捷的支付体系和更有温度的服务体系，并做好长辈客群合法权益保护与反诈防非知识普及。'},
+  {id:'KB-BANK-02', title:'个人养老金账户基本规则', kw:'个人养老金 缴存 缴费 额度 12000 税 税收 领取',
+   text:'个人养老金实行个人账户制，每年缴费上限为12000元，可按月、分次或按年度一次性缴纳，缴费额度按自然年度累计，不可跨年结转。缴费可在综合所得中据实扣除，领取时按3%单独计税。'},
+  {id:'KB-SEC-01', title:'敏感个人信息保护要求', kw:'个人信息 隐私 授权 加密 删除 敏感 数据安全',
+   text:'音视频、人脸、声纹、财产信息属于敏感个人信息。处理应当取得个人单独同意，遵循最小必要原则，采取加密等安全措施，个人有权查阅、复制、删除其个人信息。'},
+];
+
+/* ---------------- 2. 全局状态 ---------------- */
+const S = {
+  cfg:{ mode:'offline', base:'https://api.deepseek.com/v1', key:'', model:'deepseek-chat', temp:0.2 },
+  ledger:[], risks:[], chain:[], childFeed:[], authLog:[],
+  dayUsed:0, busy:false, tts:true, listening:false, auto:false,
+  granted:false,                       // 本次演示是否已对“公证机构”授权
+  sessionId:'S'+Date.now().toString(36).toUpperCase(),
+};
+
+/* ---------------- 3. 日志 ---------------- */
+function log(layer, msg){
+  const el = document.createElement('div');
+  el.className = 'logline';
+  el.innerHTML = `<span class="t">${fmtTime(now())}</span>
+    <span class="layer LY-${layer}">${layer}</span><span class="m">${esc(msg)}</span>`;
+  const body = $('#logBody');
+  body.appendChild(el);
+  while(body.children.length > 400) body.removeChild(body.firstChild);
+  body.scrollTop = body.scrollHeight;
+}
+$('#btnClearLog').onclick = ()=>{ $('#logBody').innerHTML=''; log('系统','日志已清空'); };
+
+/* ---------------- 4. 知识库查找 ---------------- */
+function retrieve(query, k=3){
+  const q = query.replace(/\s/g,'');
+  return RAG_KB.map(doc=>{
+    let s = 0;
+    for(const kw of doc.kw.split(' ')) if(kw && q.includes(kw)) s += kw.length * 2;
+    for(const ch of new Set(q)){
+      if(doc.text.includes(ch)) s += 0.25;
+      if(doc.title.includes(ch)) s += 0.5;
+    }
+    return {doc, score:+s.toFixed(2)};
+  }).filter(x=>x.score>1.2).sort((a,b)=>b.score-a.score).slice(0,k);
+}
+
+/* ---------------- 5. 提示词 ---------------- */
+const SKILL_LIST = [
+  'account_query 查询账户', 'pension_deposit 办理养老金缴存', 'transfer 办理转账',
+  'fraud_consult 反诈咨询（事前宣教）', 'fraud_call 通话诈骗预警（事中）',
+  'legal_attest 法律文书录制存证', 'evidence_export 导出证据包',
+  'permission_grant 存证调取授权', 'chitchat 日常对话', 'unknown 无法识别'
+];
+
+const SYSTEM_PROMPT = `你是“银安盾”居家财产守护终端的【智能引擎层】。这个终端放在老人家里，
+用来帮老人防诈骗、拦住可疑转账、把立遗嘱这类事的过程录下来存好。你只负责“听懂老人说什么”和“把话说清楚”。
+
+【你的输出格式】只输出一个 JSON 对象，不要输出解释，不要用 markdown 代码块：
+{
+  "intent": "从这些里选一个：${SKILL_LIST.join(' / ')}",
+  "slots": { "amount": 数字或null, "target": "对方是谁或null", "question": "老人问的事或null" },
+  "reply": "对老人说的话。要求：大白话，不超过45字，一句话只说一件事，不用专业词。涉及金额要把数字读两遍。",
+  "risk_flags": [ { "type": "风险类型", "level": "L1|L2|L3", "reason": "一句大白话说明为什么" } ],
+  "citations": [ "引用的知识库编号，如 KB-FRAUD-01；没有依据就写空数组" ],
+  "need_identity": true或false,
+  "need_child_confirm": true或false
+}
+
+【必须遵守的几条】
+1. 说到利率、额度、期限、税费这类具体数字时，必须能在下面“找到的相关资料”里对上，并在 citations 里写出编号。
+   找不到依据就不要编，reply 统一说“这个我得帮您问问银行的人，别急”。
+2. 不承诺收益，不推荐具体产品，涉及理财只做风险提醒。
+3. 涉及账户、转账、缴存、下单花钱的动作，need_identity 必须是 true。
+4. 老人说到陌生来电让他转账、提到“安全账户”“涉嫌洗钱”“资金核查”“验证码”“高额回报”“医养结合”
+   这类内容时，risk_flags 里必须给出 level = "L3"，并在 reply 里明确劝阻。
+5. 说到立遗嘱、财产声明时，要提醒全程录像，并且要问清楚是不是本人自愿。
+
+【说话要求】短句、口语。涉及金额读两遍，例如“5000元，也就是五千元”。`;
+
+function buildUserMessage(text, hits){
+  const kb = hits.length
+    ? hits.map(h=>`【${h.doc.id}】${h.doc.title}：${h.doc.text}`).join('\n')
+    : '（这次没有找到相关资料）';
+  return `【找到的相关资料】
+${kb}
+
+【老人的情况】
+${ACCOUNT.name}，${ACCOUNT.age}岁；活期账户余额 ${ACCOUNT.balance} 元。
+单日累计限额 ${ACCOUNT.dayLimit} 元，今天已经用了 ${S.dayUsed} 元。
+常联系的收款方：${ACCOUNT.knownPayees.join('、')}。
+当前时间：${fmtDT(now())}。
+
+【老人刚刚说】
+“${text}”`;
+}
+
+/* ---------------- 6. 大模型调用 ---------------- */
+async function callLLM(userText){
+  const hits = retrieve(userText);
+  log('引擎', `知识库查找完成，找到 ${hits.length} 条相关资料${hits.length?'：'+hits.map(h=>h.doc.id).join('、'):''}`);
+  hits.forEach(h=>log('引擎', `  命中【${h.doc.id}】${h.doc.title}（相关度 ${h.score}）`));
+
+  const userMsg = buildUserMessage(userText, hits);
+  const t0 = performance.now();
+  let plan = null, raw = '', usage = null, via = '';
+
+  if(S.cfg.mode !== 'offline'){
+    try{
+      const baseBody = {
+        model: S.cfg.model || 'deepseek-chat',
+        temperature: parseFloat(S.cfg.temp) || 0.2,
+        messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}]
+      };
+      const send = async withJsonMode => {
+        const body = withJsonMode ? {...baseBody, response_format:{type:'json_object'}} : baseBody;
+        if(S.cfg.mode === 'proxy'){
+          via = '本地代理';
+          return fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({...body, base:S.cfg.base, apiKey:S.cfg.key})});
+        }
+        via = '浏览器直连';
+        return fetch(S.cfg.base.replace(/\/+$/,'')+'/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.cfg.key},
+          body:JSON.stringify(body)});
+      };
+      let res = await send(true);
+      if(!res.ok){
+        const t1 = await res.text().catch(()=> '');
+        log('引擎', `⚠ 第一次调用返回 HTTP ${res.status}，已去掉 JSON 模式再试一次（兼容更多模型）`);
+        res = await send(false);
+        if(!res.ok){
+          const t2 = await res.text().catch(()=> '');
+          throw new Error(`HTTP ${res.status} ${(t2||t1).slice(0,180)}`);
+        }
+      }
+      const data = await res.json();
+      raw = data?.choices?.[0]?.message?.content ?? '';
+      usage = data?.usage || null;
+      plan = parsePlan(raw);
+      if(!plan) throw new Error('模型返回的内容没法解析成结构化结果：'+raw.slice(0,160));
+      log('引擎', `大模型调用成功（${via} · ${S.cfg.model}${usage?` · tokens ${usage.total_tokens}`:''}）`);
+    }catch(err){
+      log('引擎', `⚠ 大模型调用失败：${err.message}`);
+      log('引擎', '已自动切换到【离线规则引擎】，核心功能不中断');
+      plan = null;
+    }
+  }
+
+  let degraded = false;
+  if(!plan){ plan = offlineBrain(userText, hits); degraded = true; }
+
+  const ms = Math.round(performance.now()-t0);
+  return {plan, hits, ms, degraded, usage, via};
+}
+
+function parsePlan(txt){
+  if(!txt) return null;
+  let s = String(txt).trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if(a>=0 && b>a) s = s.slice(a,b+1);
+  try{
+    const o = JSON.parse(s);
+    if(!o || typeof o !== 'object' || !o.intent) return null;
+    o.slots = o.slots && typeof o.slots==='object' ? o.slots : {};
+    o.risk_flags = Array.isArray(o.risk_flags) ? o.risk_flags : [];
+    o.citations  = Array.isArray(o.citations)  ? o.citations  : [];
+    o.reply = typeof o.reply==='string' ? o.reply : '好的，我听着呢。';
+    return o;
+  }catch(e){ return null; }
+}
+
+/* ---------------- 7. 离线规则引擎（断网兜底） ---------------- */
+function offlineBrain(text, hits){
+  const t = text;
+  const has = (...ws)=>ws.some(w=>t.includes(w));
+  let amount = null;
+  const m = t.match(/(\d+(?:\.\d+)?)\s*(万|千)?\s*(元|块|钱)?/);
+  if(m){ amount = parseFloat(m[1]); if(m[2]==='万') amount*=10000; if(m[2]==='千') amount*=1000; }
+  const cite = hits.map(h=>h.doc.id);
+
+  // ① 高危：让老人往“安全账户”转钱
+  if(has('安全账户','涉嫌洗钱','涉案','资金核查','公检法','检察院','法院','通缉','冻结') && has('转','汇','打钱','打款','取钱','交钱')){
+    return {intent:'transfer', slots:{amount:amount||50000,target:'来电方提供的陌生账户'},
+      reply:'大娘，这是骗子！公检法不会打电话让您转钱，根本没有“安全账户”。这钱千万不能转！',
+      risk_flags:[{type:'冒充公检法诈骗',level:'L3',reason:'对方说的是“安全账户”“涉嫌洗钱”，这正好是冒充公检法诈骗的典型话术'}],
+      citations:['KB-FRAUD-02'],need_identity:true,need_child_confirm:true};
+  }
+  // ② 通话诈骗预警
+  if(has('刚才有个电话','有人打电话','接到电话','来电话','电话里说')){
+    return {intent:'fraud_call', slots:{question:t},
+      reply:'这个电话不对劲。他们让您转钱、要验证码，都是骗人的。您先挂掉，我帮您告诉家里人。',
+      risk_flags:[{type:'疑似诈骗来电',level:'L2',reason:'通话内容涉及转账、涉案等敏感要求'}],
+      citations:cite.length?cite:['KB-FRAUD-02'],need_identity:false,need_child_confirm:false};
+  }
+  // ③ 反诈咨询（事前宣教）
+  if(has('靠谱','真的吗','可靠','可信','能不能投','高额回报','医养结合','保健品','康养旅游','预付卡','返利','养老项目','投资项目','包治百病','讲座')){
+    return {intent:'fraud_consult', slots:{question:t},
+      reply:'这个不靠谱。说保本又给高利息的，基本是冲着本金来的。您别急着掏钱，我给您讲讲。',
+      risk_flags:[{type:'疑似养老领域非法集资',level:'L2',reason:'对方宣传“高额回报/医养结合/保健品”，与公安部公布的养老非法集资典型手法吻合'}],
+      citations:cite.length?cite:['KB-FRAUD-01','KB-FRAUD-03'],need_identity:false,need_child_confirm:false};
+  }
+  // ④ 授权调取（必须先问老人同不同意）
+  if(has('授权','我女儿','我儿子','我闺女','家属','律师','公证处','他们要看','银行要看')){
+    return {intent:'permission_grant', slots:{question:t},
+      reply:'您说清楚给谁看、看哪些，我记下来。您点头我才给，不点头谁也拿不走。',
+      risk_flags:[],citations:['KB-SEC-01'],need_identity:true,need_child_confirm:false};
+  }
+  // ⑤ 证据包导出
+  if(has('导出','证据包','材料','调取','上次录','复印','拿一份')){
+    return {intent:'evidence_export', slots:{question:t},
+      reply:'好，我把材料整理成一份证据包。不过这个得您本人点头才能给别人看，我先问您一声。',
+      risk_flags:[],citations:['KB-LAW-03'],need_identity:false,need_child_confirm:false};
+  }
+  // ⑥ 法律文书存证
+  if(has('遗嘱','财产声明','遗产','留给','继承','房子给')){
+    return {intent:'legal_attest', slots:{question:t},
+      reply:'立遗嘱是大事。我会全程录像，还要问您三个问题，确认是您自己的意思。咱们现在开始，好吗？',
+      risk_flags:[],citations:['KB-LAW-01','KB-LAW-02'],need_identity:true,need_child_confirm:false};
+  }
+  // ⑦ 养老金缴存
+  if(has('养老金') && has('缴','交','存','充')){
+    return {intent:'pension_deposit', slots:{amount:amount||1000},
+      reply:`好，给您缴${amount||1000}元个人养老金，${cnNum(amount||1000)}元。得先确认是您本人。`,
+      risk_flags:[],citations:['KB-BANK-02'],need_identity:true,need_child_confirm:false};
+  }
+  // ⑧ 转账（放在查账户前面，避免“陌生账户转账”被当成查账户）
+  if(has('转','汇款','打钱','打款')){
+    return {intent:'transfer', slots:{amount:amount||1000,target:'待确认的收款人'},
+      reply:`要转${amount||1000}元，${cnNum(amount||1000)}元。这个人您以前没转过，我得多问一句：是您自己认识的人吗？`,
+      risk_flags:[{type:'陌生收款人',level:'L2',reason:'这个收款人不在老人常联系的名单里'}],
+      citations:[],need_identity:true,need_child_confirm:true};
+  }
+  // ⑨ 查账户
+  if(has('余额','查一下','还剩','多少钱','明细','流水','账单','账户里','存款')){
+    return {intent:'account_query', slots:{question:t},
+      reply:`您账户里有 ${ACCOUNT.balance} 元。个人养老金今年交了 ${ACCOUNT.pension.paid} 元，还剩 ${ACCOUNT.pension.yearLimit-ACCOUNT.pension.paid} 元额度。`,
+      risk_flags:[],citations:[],need_identity:true,need_child_confirm:false};
+  }
+  // ⑩ 兜底
+  return {intent:'chitchat', slots:{question:t},
+    reply:'哎，我听着呢。您想问问理财产品靠不靠谱、查查账户，还是想把遗嘱录下来？跟我说一声。',
+    risk_flags:[],citations:[],need_identity:false,need_child_confirm:false};
+}
+
+/* ---------------- 8. 金融风险规则引擎 ---------------- */
+function riskEngine(plan, text){
+  const flags = [...(plan.risk_flags||[])];
+  const hour = now().getHours();
+  const amount = Number(plan.slots?.amount) || 0;
+
+  if(hour>=23 || hour<6){
+    flags.push({type:'非工作时间转账',level:'L2',
+      reason:`现在是 ${String(hour).padStart(2,'0')}:${String(now().getMinutes()).padStart(2,'0')}，属于 23:00–06:00 的高风险时段`});
+  }
+  const isMoney = ['pension_deposit','transfer'].includes(plan.intent);
+  if(isMoney && amount > ACCOUNT.singleLimit){
+    flags.push({type:'超过单笔限额',level:'L2',reason:`这笔 ${amount} 元，超过了单笔 ${ACCOUNT.singleLimit} 元的免确认限额`});
+  }
+  if(plan.intent==='pension_deposit' && amount>0 && ACCOUNT.pension.paid+amount > ACCOUNT.pension.yearLimit){
+    flags.push({type:'超过年度缴费额度',level:'L3',
+      reason:`今年已经缴了 ${ACCOUNT.pension.paid} 元，再缴 ${amount} 元就超过 ${ACCOUNT.pension.yearLimit} 元的上限了`});
+  }
+  if(isMoney && S.dayUsed+amount > ACCOUNT.dayLimit){
+    flags.push({type:'超过单日累计限额',level:'L2',
+      reason:`今天已经用了 ${S.dayUsed} 元，这笔 ${amount} 元会超过单日 ${ACCOUNT.dayLimit} 元的默认限额，需要家庭确认后才能办`});
+  }
+  if(plan.intent==='transfer' && /安全账户|涉嫌洗钱|涉案|资金核查|验证码|共享屏幕|刷单|返利|解冻|通缉/.test(text)){
+    if(!flags.some(f=>f.level==='L3'))
+      flags.push({type:'涉诈话术',level:'L3',reason:'话里出现了诈骗常用的说法，同时又要转账，两个信号碰在一起了'});
+  }
+
+  const rank = {L0:0,L1:1,L2:2,L3:3};
+  let level='L0';
+  flags.forEach(f=>{ if((rank[f.level]??0) > rank[level]) level = f.level; });
+  return {level, flags};
+}
+
+/* ---------------- 9. 确定性业务执行 ---------------- */
+async function runSkill(plan, text){
+  const intent = plan.intent, slots = plan.slots||{};
+  const amount = Number(slots.amount)||0;
+
+  switch(intent){
+    case 'pension_deposit':{
+      const before = ACCOUNT.pension.paid;
+      ACCOUNT.pension.paid += amount; S.dayUsed += amount;
+      const r = {bizId:uid('PEN'), type:'个人养老金缴存', amount,
+        to:'个人养老金资金账户', status:'已回单', channel:'工行开放接口', ts:fmtDT(now())};
+      return {ok:true, receipt:r,
+        reply:`办好啦！${moneyRead(amount)}已经缴进去了。您今年一共交了 ${ACCOUNT.pension.paid} 元，还能再交 ${ACCOUNT.pension.yearLimit-ACCOUNT.pension.paid} 元。`,
+        card:{kind:'recv', title:'✅ 业务回单 · 个人养老金缴存', rows:[
+          ['业务编号',r.bizId],['缴存金额',`${amount} 元`],['入账账户',r.to],
+          ['本年度已缴',`${before} → ${ACCOUNT.pension.paid} 元`],
+          ['剩余额度',`${ACCOUNT.pension.yearLimit-ACCOUNT.pension.paid} 元`],['状态',r.status]]}};
+    }
+    case 'transfer':{
+      if(amount>ACCOUNT.balance) return {ok:false, reply:'您账户里的钱不够，这笔转账我做不了。'};
+      ACCOUNT.balance -= amount; S.dayUsed += amount;
+      const r = {bizId:uid('TRF'), type:'转账汇款', amount, to:slots.target||'待确认收款人',
+        status:'已回单', channel:'工行开放接口', ts:fmtDT(now())};
+      return {ok:true, receipt:r, reply:`转过去了，${moneyRead(amount)}。回单我念给您听：业务编号 ${r.bizId}。`,
+        card:{kind:'recv', title:'✅ 业务回单 · 转账汇款', rows:[
+          ['业务编号',r.bizId],['转账金额',`${amount} 元`],['收款方',r.to],['状态',r.status]]}};
+    }
+    case 'account_query':{
+      return {ok:true, reply:`您账户里有 ${ACCOUNT.balance} 元。个人养老金今年交了 ${ACCOUNT.pension.paid} 元，还剩 ${ACCOUNT.pension.yearLimit-ACCOUNT.pension.paid} 元额度。`,
+        card:{kind:'info', title:'💳 账户情况', rows:[
+          ['客户',`${ACCOUNT.name}　${ACCOUNT.age}岁`],['账号',ACCOUNT.customerId],
+          ['活期余额',`${ACCOUNT.balance} 元`],
+          ['个人养老金本年度已缴',`${ACCOUNT.pension.paid} / ${ACCOUNT.pension.yearLimit} 元`],
+          ['今日已用限额',`${S.dayUsed} / ${ACCOUNT.dayLimit} 元`]]}};
+    }
+    case 'fraud_consult':{
+      const hit = (plan.citations||[]).length ? plan.citations.join('、') : 'KB-FRAUD-01';
+      return {ok:true, reply:plan.reply,
+        card:{kind:'warn', title:'🧠 反诈宣传 · 这类说法要当心', rows:[
+          ['老人问的', slots.question||text],
+          ['查到的资料', hit],
+          ['判断', '与公安部公布的养老领域非法集资典型手法吻合'],
+          ['主要特征','承诺保本高息、要求向个人账户转账、以免费体检旅游讲座拉人'],
+          ['建议','不要转钱；可以让家属一起听一遍；有疑问打 12315 或 110 咨询']]}};
+    }
+    case 'fraud_call':{
+      return {ok:true, reply:plan.reply,
+        card:{kind:'risk', title:'📞 通话诈骗预警', rows:[
+          ['识别到的说法','涉及转账、涉案、验证码等敏感要求'],
+          ['依据','KB-FRAUD-02 冒充公检法类诈骗的识别要点'],
+          ['处置','语音提醒老人挂断 → 通知家属 → 记入风险台账'],
+          ['提示','公检法不会电话办案，也没有“安全账户”']]}};
+    }
+  }
+  return {ok:true, reply:plan.reply};
+}
+
+/* ---------------- 10. 存证数据层 ---------------- */
+function chainAppend(type, payload){
+  const prev = S.chain.length ? S.chain[S.chain.length-1].blockHash : '0'.repeat(64);
+  const ts = new Date().toISOString();
+  const dataHash = SHA256(JSON.stringify(payload));
+  const index = S.chain.length + 1;
+  const blockHash = SHA256(`${index}|${type}|${ts}|${dataHash}|${prev}`);
+  const block = {index, type, ts, dataHash, prevHash:prev, blockHash, payload};
+  S.chain.push(block);
+  $('#mChain').textContent = S.chain.length;
+  renderChain();
+  log('存证', `第 ${index} 条存证已保存　文件指纹=${dataHash.slice(0,16)}…`);
+  log('存证', `  时间戳 ${new Date(ts).toLocaleString('zh-CN',{hour12:false})}　链式校验与上一条一致 ✓`);
+  return block;
+}
+
+/* ---------------- 11. 界面渲染 ---------------- */
+const chat = $('#chat');
+function addUser(text){
+  const d = document.createElement('div');
+  d.className='msg user';
+  d.innerHTML = `<div class="av">👵</div><div class="bubble">${esc(text)}</div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+function addBot(html, meta){
+  const d = document.createElement('div');
+  d.className='msg bot';
+  d.innerHTML = `<div class="av">🤖</div><div class="bubble">${html}
+    ${meta?`<div class="meta">${meta}</div>`:''}</div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+function addCard(kind, title, rows){
+  const d = document.createElement('div');
+  d.className = 'rcard '+kind;
+  d.innerHTML = `<div class="rh">${title}</div><div class="rb"><dl class="kv">${
+    rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+function addRawCard(kind, title, inner){
+  const d = document.createElement('div');
+  d.className = 'rcard '+kind;
+  d.innerHTML = `<div class="rh">${title}</div><div class="rb">${inner}</div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+
+function renderRisk(){
+  $('#riskEmpty').style.display = S.risks.length?'none':'block';
+  $('#riskList').innerHTML = S.risks.map(r=>`
+    <div class="item ${r.level}">
+      <div class="it-head"><b>${r.level} · ${esc(r.type)}</b><span class="ts">${r.ts}</span></div>
+      <div>${esc(r.reason)}</div>
+      ${r.action?`<div class="sug">怎么处理的：${esc(r.action)}</div>`:''}
+    </div>`).join('');
+}
+function renderLedger(){
+  $('#ledgerEmpty').style.display = S.ledger.length?'none':'block';
+  $('#ledgerList').innerHTML = S.ledger.map(t=>`
+    <div class="item L1">
+      <div class="it-head"><b>${esc(t.type)}　${t.amount} 元</b><span class="ts">${t.ts}</span></div>
+      <div class="hashrow"><span>业务编号</span><span>${t.bizId}</span></div>
+      <div class="hashrow"><span>状态</span><span>${esc(t.status)}　|　${esc(t.channel||'')}</span></div>
+    </div>`).join('');
+}
+function renderChain(){
+  $('#chainEmpty').style.display = S.chain.length?'none':'block';
+  $('#chainList').innerHTML = S.chain.slice().reverse().map(b=>`
+    <div class="chain-item">
+      <div class="ch-head"><b>#${b.index}　${esc(b.type)}</b><span class="ts">${new Date(b.ts).toLocaleString('zh-CN',{hour12:false})}</span></div>
+      <div class="hashrow"><span>文件指纹</span><span>${b.dataHash}</span></div>
+      <div class="hashrow"><span>上一条指纹</span><span>${b.prevHash}</span></div>
+      <div class="hashrow"><span>本条目指纹</span><span>${b.blockHash}</span></div>
+    </div>`).join('');
+}
+function renderAuth(){
+  $('#authEmpty').style.display = S.authLog.length?'none':'block';
+  $('#authList').innerHTML = S.authLog.map(a=>`
+    <div class="item ${a.ok?'L1':'L3'}">
+      <div class="it-head"><b>${a.ok?'✅ 已授权':'⛔ 已拒绝'} · ${esc(a.who)}</b><span class="ts">${a.ts}</span></div>
+      <div>想看的：${esc(a.scope)}</div>
+      <div class="sug">${esc(a.note)}</div>
+    </div>`).join('');
+}
+function pushChild(title, body, level='L1'){
+  S.childFeed.push({title, body, level, ts:fmtDT(now())});
+  renderRisk();  // 家属看到的预警与风险台账同源
+  log('端口', `已推送到家属提醒端：${title}`);
+}
+function setMetric(id, v){ $('#'+id).textContent = v; }
+function setBot(state, text){
+  $('#botAvatar').className = 'bot '+state;
+  if(text) $('#botStatus').textContent = text;
+}
+
+/* ---------------- 12. 语音 ---------------- */
+function speak(text){
+  if(!S.tts || !('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/[（(][^）)]*[）)]/g,''));
+    u.lang='zh-CN'; u.rate=0.85; u.pitch=1.0;
+    const vs = speechSynthesis.getVoices();
+    const zh = vs.find(v=>/zh[-_]CN/i.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang));
+    if(zh) u.voice = zh;
+    u.onstart = ()=>setBot('speaking','正在说话…');
+    u.onend   = ()=>setBot('idle','待机中 · 说“小安”即可唤醒');
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+$('#btnTTS').onclick = e=>{
+  S.tts = !S.tts;
+  e.currentTarget.style.background = S.tts ? '#EAF3FB' : '#F0F0F0';
+  e.currentTarget.textContent = S.tts ? '🔊' : '🔇';
+  log('感知', `语音播报已${S.tts?'打开':'关闭'}`);
+  if(!S.tts && 'speechSynthesis' in window) speechSynthesis.cancel();
+};
+
+let recog = null;
+function initASR(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ log('感知','⚠ 当前浏览器不支持语音识别，建议用 Chrome 或 Edge'); return null; }
+  const r = new SR();
+  r.lang='zh-CN'; r.continuous=false; r.interimResults=true;
+  r.onstart = ()=>{ S.listening=true; $('#btnMic').classList.add('rec'); setBot('listening','正在听您说话…'); log('感知','麦克风已打开'); };
+  r.onresult = ev=>{
+    let interim='', final='';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const t = ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) final += t; else interim += t;
+    }
+    if(interim) $('#input').value = interim;
+    if(final) $('#input').value = final;
+  };
+  r.onerror = ev=>log('感知',`⚠ 语音识别出错：${ev.error}`);
+  r.onend = ()=>{
+    S.listening=false; $('#btnMic').classList.remove('rec'); setBot('idle','待机中 · 说“小安”即可唤醒');
+    const v = $('#input').value.trim(); if(v) handle(v);
+  };
+  return r;
+}
+$('#btnMic').onclick = ()=>{
+  if(!recog) recog = initASR();
+  if(!recog){ alert('当前浏览器不支持语音识别，请改用 Chrome / Edge，或直接打字。'); return; }
+  if(S.listening){ recog.stop(); return; }
+  try{ recog.start(); }catch(e){}
+};
+
+/* ---------------- 13. 弹窗：本人核验 ---------------- */
+let faceResolve = null;
+function askFace(ctx){
+  return new Promise(resolve=>{
+    faceResolve = resolve;
+    $('#faceCtx').innerHTML = ctx;
+    $('#gateList').innerHTML = `
+      <li><span class="ok">✓</span><span>第一道关 · 限额：单日累计不超过 ${ACCOUNT.dayLimit} 元（今天已用 ${S.dayUsed} 元）</span></li>
+      <li><span class="wait">○</span><span>第二道关 · 确认是本人：人脸 + 声纹 <b>（进行中）</b></span></li>
+      <li><span class="wait">○</span><span>第三道关 · 家属确认：需要时才会触发</span></li>`;
+    $('#faceOk').classList.remove('show');
+    $('#faceStage').querySelectorAll('video').forEach(v=>v.remove());
+    $('#facePh').style.display='block';
+    $('#maskFace').classList.add('show');
+    log('感知','开始本人核验：调用摄像头做人脸比对（人脸特征只在本地比对，不上传）');
+  });
+}
+$('#btnFaceOpen').onclick = async ()=>{
+  try{
+    const st = await navigator.mediaDevices.getUserMedia({video:{width:480,height:480,facingMode:'user'}});
+    const v = document.createElement('video'); v.autoplay=true; v.playsInline=true; v.muted=true;
+    v.srcObject = st;
+    $('#faceStage').insertBefore(v, $('#faceStage').firstChild);
+    $('#facePh').style.display='none';
+    log('感知','摄像头已打开，正在做人脸比对');
+  }catch(e){
+    log('感知','⚠ 摄像头用不了（'+e.name+'），切换成模拟核验');
+    $('#facePh').innerHTML = '摄像头用不了<br><span style="font-size:11px">已切换为模拟核验，点下面绿色按钮即可</span>';
+  }
+};
+$('#btnFaceOk').onclick = ()=>{
+  $('#faceOk').classList.add('show');
+  log('感知', `核验通过　人脸相似度 ${(0.96+Math.random()*0.035).toFixed(3)}　声纹匹配度 ${(0.9+Math.random()*0.08).toFixed(3)}　结论：是本人 ✓`);
+  setTimeout(()=>{
+    $('#maskFace').classList.remove('show');
+    $('#faceStage').querySelectorAll('video').forEach(v=>{ v.srcObject?.getTracks().forEach(t=>t.stop()); v.remove(); });
+    faceResolve && faceResolve(true); faceResolve = null;
+  }, 700);
+};
+$('#btnFaceCancel').onclick = ()=>{
+  $('#maskFace').classList.remove('show');
+  $('#faceStage').querySelectorAll('video').forEach(v=>{ v.srcObject?.getTracks().forEach(t=>t.stop()); v.remove(); });
+  log('感知','老人取消操作，流程终止，没有产生任何交易');
+  faceResolve && faceResolve(false); faceResolve = null;
+};
+
+/* ---------------- 14. 弹窗：家属确认 ---------------- */
+let childResolve = null;
+function askChild(html){
+  return new Promise(resolve=>{
+    childResolve = resolve;
+    $('#childWarn').innerHTML = html;
+    $('#childGate').innerHTML = `
+      <li><span class="ok">✓</span><span>第一道关 · 限额：通过</span></li>
+      <li><span class="ok">✓</span><span>第二道关 · 确认是本人：人脸 + 声纹通过</span></li>
+      <li><span class="wait">○</span><span>第三道关 · 家属确认：<b>等待家属回应</b>（15 分钟内有效）</span></li>`;
+    $('#maskChild').classList.add('show');
+    log('引擎','触发第三道关：已把确认请求推给家属（15 分钟内不确认就作废）');
+  });
+}
+$('#btnChildOk').onclick = ()=>{ $('#maskChild').classList.remove('show'); log('引擎','家属确认放行 ✓'); childResolve && childResolve(true); childResolve=null; };
+$('#btnChildReject').onclick = ()=>{ $('#maskChild').classList.remove('show'); log('引擎','家属不同意 ✗ 这笔操作已终止'); childResolve && childResolve(false); childResolve=null; };
+
+/* ---------------- 15. 弹窗：授权调取 ---------------- */
+let authResolve = null;
+function askAuth(who, scope, reason){
+  return new Promise(resolve=>{
+    authResolve = resolve;
+    $('#authWho').innerHTML = `<b>${esc(who)}</b> 想调取：<b>${esc(scope)}</b><br>用途：${esc(reason)}`;
+    $('#authGate').innerHTML = `
+      <li><span class="wait">○</span><span>这位老人有没有授权过？<b>需要老人本人点头</b></span></li>
+      <li><span class="wait">○</span><span>调取范围：${esc(scope)}</span></li>
+      <li><span class="wait">○</span><span>这次授权和调取都会记入档案，全程留痕</span></li>`;
+    $('#maskAuth').classList.add('show');
+    log('引擎', `收到调取申请：${who} 想看「${scope}」，等待老人本人授权`);
+  });
+}
+$('#btnAuthOk').onclick = ()=>{
+  $('#maskAuth').classList.remove('show');
+  S.authLog.push({ok:true, who:'市公证处', scope:'法律文书存证档案（音视频 + 文字版 + 文件指纹）',
+    note:'已生成一次性授权码，有效期 24 小时；本次授权与调取均已记入档案', ts:fmtDT(now())});
+  S.granted = true; renderAuth();
+  log('存证','老人同意授权，已生成一次性授权码（24 小时有效）');
+  log('端口','授权记录与调取记录均已写入档案，可随时查证');
+  authResolve && authResolve(true); authResolve=null;
+};
+$('#btnAuthDeny').onclick = ()=>{
+  $('#maskAuth').classList.remove('show');
+  S.authLog.push({ok:false, who:'市公证处', scope:'法律文书存证档案',
+    note:'老人未同意，调取请求被拒绝；拒绝记录同样写入档案', ts:fmtDT(now())});
+  renderAuth();
+  log('存证','老人未同意，调取请求已被拒绝（拒绝记录也留痕）');
+  authResolve && authResolve(false); authResolve=null;
+};
+
+/* ---------------- 16. 主流程 ---------------- */
+const INTENT_CN = {
+  account_query:'查询账户', pension_deposit:'办理养老金缴存', transfer:'办理转账',
+  fraud_consult:'反诈咨询', fraud_call:'通话诈骗预警', legal_attest:'法律文书录制存证',
+  evidence_export:'导出证据包', permission_grant:'存证调取授权',
+  chitchat:'日常对话', unknown:'没听懂'
+};
+const intentName = i => INTENT_CN[i] || i;
+
+async function handle(text){
+  if(S.busy) return;
+  S.busy = true; $('#btnSend').disabled = true;
+  addUser(text);
+  log('感知', `听到老人说：“${text}”`);
+  setBot('thinking','正在理解您的意思…');
+  setMetric('mIntent','…');
+
+  try{
+    /* —— 智能引擎层：理解 —— */
+    const {plan, ms, degraded} = await callLLM(text);
+    setMetric('mModel', S.cfg.mode==='offline' ? 'OFFLINE' : (S.cfg.model||'LLM').slice(0,12));
+    setMetric('mLatency', ms+'ms');
+    setMetric('mIntent', plan.intent);
+    log('引擎', `理解结果：要做的事=${intentName(plan.intent)}　关键信息=${JSON.stringify(plan.slots)}　引用资料=${plan.citations.length} 条`);
+    if(degraded) log('引擎','这一轮由【离线规则引擎】给出判断（降级运行）');
+
+    /* —— 智能引擎层：风险判断 —— */
+    const {level, flags} = riskEngine(plan, text);
+    setMetric('mRisk', level);
+    log('引擎', `风险判断：等级 ${level}，命中 ${flags.length} 条规则`);
+    flags.forEach(f=>log('引擎', `  [${f.level}] ${f.type} —— ${f.reason}`));
+
+    const tagHtml = [
+      `<span class="tag intent">${esc(intentName(plan.intent))}</span>`,
+      `<span class="tag">${ms}ms</span>`,
+      `<span class="tag ${level==='L0'?'':('risk-'+level)}">风险 ${level}</span>`,
+      degraded?`<span class="tag">降级运行</span>`:'',
+      ...plan.citations.map(c=>`<span class="tag rag">引用 ${esc(c)}</span>`)
+    ].filter(Boolean).join('');
+
+    /* —— L3：直接拦下 —— */
+    if(level === 'L3'){
+      const f = flags.find(x=>x.level==='L3') || flags[0] || {type:'高风险',reason:'命中高风险规则'};
+      addBot(esc(plan.reply), tagHtml);
+      addRawCard('risk','🚨 已拦下这笔操作', `
+        <div style="color:#8C0009;font-weight:700;margin-bottom:8px">这笔操作已经被拦下了，钱一分没动。</div>
+        <dl class="kv">
+          <dt>问题出在哪</dt><dd>${esc(f.type)}</dd>
+          <dt>为什么这么判断</dt><dd>${esc(f.reason)}</dd>
+          <dt>系统做了什么</dt><dd>拒绝执行 · 账户临时保护 · 通知家属 · 告知银行风控</dd>
+          <dt>依据资料</dt><dd>${plan.citations.length?esc(plan.citations.join('、')):'KB-FRAUD-02'}</dd>
+          <dt>接口调用</dt><dd>工行开放接口 · 账户临时保护（模拟）</dd>
+        </dl>`);
+      S.risks.push({level:'L3', type:f.type, reason:f.reason,
+        action:'拒绝执行、账户临时保护、通知家属与银行风控', ts:fmtDT(now())});
+      renderRisk();
+      pushChild('🚨 高风险预警：可能有诈骗','老人正要转出一笔钱，系统识别到「'+f.type+'」，已经拦下并对账户做了临时保护，请赶紧给老人回个电话。','L3');
+      chainAppend('预警留痕·已拦截交易', {类型:f.type, 原因:f.reason, 等级:'L3',
+        时间:fmtDT(now()), 说明:'拦截记录留痕，资金未发生变动'});
+      log('引擎','已执行处理：拒绝交易，账户临时保护生效');
+      log('端口','已同步推送家属提醒端与银行风控端');
+      speak(plan.reply);
+      setBot('idle','待机中 · 说“小安”即可唤醒');
+      return;
+    }
+
+    /* —— L1/L2：记入台账 —— */
+    if(flags.length){
+      flags.forEach(f=>S.risks.push({level:f.level, type:f.type, reason:f.reason,
+        action: f.level==='L2' ? '语音提醒 + 复述确认 + 通知家属' : '语音提醒', ts:fmtDT(now())}));
+      renderRisk();
+      if(level==='L2') pushChild('⚠ 风险提示','老人这边出现中风险操作：'+flags.map(f=>f.reason).join('；'),'L2');
+    }
+
+    /* —— 法律文书录制存证 —— */
+    if(plan.intent === 'legal_attest'){
+      const ok = await askFace(`<div class="infobox">即将开始：<b>法律文书录制存证</b>
+        <br>接下来会先确认是您本人，再问您三个问题，然后全程录音录像。</div>`);
+      if(!ok){ addBot('好，那咱们先不弄了。您想什么时候录再叫我。', tagHtml); setBot('idle','待机中 · 说“小安”即可唤醒'); return; }
+      await legalAttestFlow(text);
+      setBot('idle','待机中 · 说“小安”即可唤醒');
+      return;
+    }
+
+    /* —— 导出证据包 —— */
+    if(plan.intent === 'evidence_export'){
+      addBot(esc(plan.reply), tagHtml);
+      if(!S.granted){
+        const ok = await askAuth('市公证处','法律文书存证档案（音视频 + 文字版 + 文件指纹）','继承纠纷案件材料核验');
+        if(!ok){
+          addBot('没您点头，这份材料我谁也不给。您放心。');
+          setBot('idle','待机中 · 说“小安”即可唤醒'); return;
+        }
+      }
+      exportPackage('delegate');
+      setBot('idle','待机中 · 说“小安”即可唤醒');
+      return;
+    }
+
+    /* —— 授权调取 —— */
+    if(plan.intent === 'permission_grant'){
+      addBot(esc(plan.reply), tagHtml);
+      if(S.chain.length === 0){
+        addBot('不过您这儿还没有存证材料，等录过遗嘱或者财产声明之后，才能授权别人来调。');
+        setBot('idle','待机中 · 说“小安”即可唤醒'); return;
+      }
+      const ok = await askAuth('市公证处','法律文书存证档案（音视频 + 文字版 + 文件指纹）','继承纠纷案件材料核验');
+      addBot(ok ? '好，我给他看一眼。就这一次，24 小时后自动失效。'
+                : '好，那就不给。我给您记下来，以后谁问都说您没同意。');
+      setBot('idle','待机中 · 说“小安”即可唤醒');
+      return;
+    }
+
+    /* —— 资金类与账户类：先确认是本人 —— */
+    const isMoney = ['pension_deposit','transfer'].includes(plan.intent);
+    if(plan.need_identity || isMoney){
+      const ctx = `<div class="infobox">即将办理：<b>${esc(intentName(plan.intent))}</b>
+        ${plan.slots?.amount?`　金额 <b>${plan.slots.amount} 元</b>`:''}
+        ${plan.slots?.target?`　对方 <b>${esc(plan.slots.target)}</b>`:''}
+        <br>凡是碰账户和钱的事，都要先确认是您本人。</div>`;
+      const ok = await askFace(ctx);
+      if(!ok){ addBot('好，那这笔先不办了。您想好了再叫我。', tagHtml); setBot('idle','待机中 · 说“小安”即可唤醒'); return; }
+    }
+    const needChild = plan.need_child_confirm || (isMoney && Number(plan.slots?.amount) > ACCOUNT.singleLimit);
+    if(needChild){
+      const ok = await askChild(`这笔要动 <b>${plan.slots?.amount||''} 元</b>，
+        ${Number(plan.slots?.amount) > ACCOUNT.singleLimit ? `超过了单笔限额 <b>${ACCOUNT.singleLimit} 元</b>，` : ''}
+        按规矩得由家里人确认一下才能办。`);
+      if(!ok){
+        addBot('家里人没同意，这笔我就先不办了，钱没动。', tagHtml);
+        pushChild('❌ 已否掉一笔待确认的操作','家里有人否掉了老人发起的操作，钱没有变动。','L2');
+        setBot('idle','待机中 · 说“小安”即可唤醒'); return;
+      }
+    }
+
+    /* —— 确定性业务执行 —— */
+    log('引擎','三道关都过了，交给业务代码执行（同一笔业务只执行一次）');
+    const result = await runSkill(plan, text);
+    addBot(esc(result.reply), tagHtml);
+    if(result.card) addCard(result.card.kind, result.card.title, result.card.rows);
+
+    if(result.receipt){
+      const r = result.receipt;
+      S.ledger.push(r); renderLedger();
+      log('引擎', `工行开放接口调用成功：${r.type}　业务编号 ${r.bizId}　金额 ${r.amount} 元`);
+      log('引擎', `进度状态：等待确认 → 已提交 → ${r.status}`);
+      pushChild('✅ 业务办好了', `${ACCOUNT.name}完成一笔${r.type}，金额 ${r.amount} 元，业务编号 ${r.bizId}，状态：${r.status}。`,'L1');
+      chainAppend(r.type, {bizId:r.bizId, type:r.type, amount:r.amount, ts:r.ts, status:r.status});
+    }else if(result.card && ['fraud_call','fraud_consult'].includes(plan.intent)){
+      chainAppend('预警留痕·'+intentName(plan.intent), {intent:plan.intent, ts:fmtDT(now()), note:'预警记录留痕，无资金变动'});
+    }
+    speak(result.reply);
+    setBot('idle','待机中 · 说“小安”即可唤醒');
+  }catch(err){
+    log('系统','⚠ 处理出错：'+err.message);
+    addBot('哎呀，我这儿出了点小毛病。您再说一遍，或者我叫银行的人来帮您。');
+    setBot('idle','待机中 · 说“小安”即可唤醒');
+  }finally{
+    S.busy = false; $('#btnSend').disabled = false;
+  }
+}
+
+/* ---------------- 17. 法律文书录制存证流程 ---------------- */
+async function legalAttestFlow(text){
+  setBot('recording','正在录制中…');
+  log('存证','开始法律文书录制：先确认本人，再问三个问题，全程录音录像');
+  const qs = [
+    ['第一个问题','这份东西是您自己愿意立的吗？','是，我自己愿意的'],
+    ['第二个问题','有没有人强迫您、或者劝着您这么做？','没有，没人逼我'],
+    ['第三个问题','您清楚这么做在法律上是什么意思吗？','清楚，我知道'],
+  ];
+  addRawCard('chain','📜 法律文书录制 · 三个问题（不能跳过）', `
+    <div style="color:#5B3E9B;font-weight:700;margin-bottom:8px"><span class="rec-dot"></span>正在录音录像，请如实回答。</div>
+    <dl class="kv">${qs.map(q=>`<dt>${esc(q[0])}</dt><dd>“${esc(q[2])}”　<span style="color:#2E7D32">✓ 已记录</span></dd>`).join('')}</dl>`);
+  for(const q of qs){
+    log('存证', `${q[0]}　终端问：“${q[1]}”`);
+    speak(q[1]);
+    await sleep(700);
+    log('存证', `　老人答：“${q[2]}”　口述内容已同步转成文字`);
+    await sleep(500);
+  }
+  const record = {type:'法律文书录制存证', 立嘱人:ACCOUNT.name, 录制时间:fmtDT(now()),
+    录制时长:'03分46秒',
+    问询记录:qs.map(q=>({问:q[1],答:q[2]})),
+    老人口述:text,
+    说明:'仅固定证据、还原事实；不判定遗嘱真伪，不替代公证与司法'};
+  const block = chainAppend('法律文书录制存证', record);
+  addRawCard('chain','🔗 存证完成', `
+    <dl class="kv">
+      <dt>录了什么</dt><dd>音视频 + 文字版文书（已加密保存）</dd>
+      <dt>本人核验</dt><dd>已通过，记录随档案一并保存</dd>
+      <dt>三个问题</dt><dd>问答内容已与音视频绑定</dd>
+      <dt>文件指纹</dt><dd>${block.dataHash}</dd>
+      <dt>时间戳</dt><dd>${new Date(block.ts).toLocaleString('zh-CN',{hour12:false})}</dd>
+      <dt>说明</dt><dd>只做存证，不判断遗嘱真假，不替代公证</dd>
+    </dl>`);
+  pushChild('📜 法律文书存证已完成',
+    `${ACCOUNT.name}完成一次录制存证，三个问题都答了，材料已固化。`,'L1');
+  speak('都录好了，三个问题您也都答了。材料我给您锁好了，谁也改不了。');
+  setBot('idle','待机中 · 说“小安”即可唤醒');
+}
+
+/* ---------------- 18. 证据包导出 ---------------- */
+function exportPackage(reason){
+  const pkg = {
+    证据包编号: uid('EVD'),
+    生成时间: fmtDT(now()),
+    生成方式: '银安盾 · 存证数据层（演示环境）',
+    说明: '本证据包用于固定原始事实，供律师、公证处、司法机关参考。本系统只做存证，不判断遗嘱真伪，不替代公证与司法判定。',
+    老人信息: {姓名:ACCOUNT.name, 账号:ACCOUNT.customerId},
+    资金操作记录: S.ledger,
+    风险预警记录: S.risks,
+    家属推送记录: S.childFeed,
+    存证档案: S.chain.map(b=>({序号:b.index,类型:b.type,时间:b.ts,
+      文件指纹:b.dataHash,上一条指纹:b.prevHash,本条目指纹:b.blockHash})),
+    授权与调取记录: S.authLog,
+  };
+  const text = JSON.stringify(pkg, null, 2);
+  const blob = new Blob([text], {type:'application/json;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `银安盾_证据包_${pkg.证据包编号}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  log('存证', `证据包已导出：${pkg.证据包编号}（含 ${S.ledger.length} 笔资金操作、${S.risks.length} 条预警、${S.chain.length} 条存证）`);
+  log('存证','导出动作已记入档案，谁在什么时候导出过，可以查');
+  if(reason==='delegate') addRawCard('chain','📦 证据包已生成', `
+    <dl class="kv">
+      <dt>证据包编号</dt><dd>${pkg.证据包编号}</dd>
+      <dt>包含内容</dt><dd>资金操作记录、风险预警记录、存证档案、授权记录</dd>
+      <dt>可以做什么</dt><dd>拿到文件后重新算一遍指纹，就能验证有没有被改过</dd>
+      <dt>授权情况</dt><dd>老人已授权，一次性授权码 24 小时内有效</dd>
+    </dl>`);
+}
+
+/* ---------------- 19. 剧本 ---------------- */
+const SCRIPTS = [
+  {t:'小福，这个养老投资项目年化15%还保本，靠谱吗？', label:'① 事前 · 反诈咨询', cls:''},
+  {t:'刚才有个电话说我涉嫌洗钱，让我把钱转到安全账户', label:'② 事中 · 诈骗来电预警', cls:'red'},
+  {t:'我要给一个陌生账户转5万块钱', label:'③ 事中 · 大额转账拦截', cls:'red'},
+  {t:'我想立个遗嘱，把房子留给小儿子', label:'④ 事后 · 遗嘱录制存证', cls:'green'},
+  {t:'帮我把上次录的材料导出来', label:'⑤ 事后 · 证据包导出', cls:'green'},
+  {t:'我女儿和公证处想看看我的存证材料', label:'⑥ 多方 · 授权调取', cls:'green'},
+  {t:'帮我查一下账户余额', label:'⑦ 语音查询账户', cls:''},
+];
+$('#chips').innerHTML = SCRIPTS.map((s,i)=>`<button class="chip ${s.cls}" data-i="${i}">${s.label}</button>`).join('');
+$('#chips').onclick = e=>{
+  const b = e.target.closest('.chip'); if(!b || S.busy) return;
+  const sc = SCRIPTS[+b.dataset.i];
+  $('#input').value = sc.t; handle(sc.t);
+};
+$('#btnSend').onclick = ()=>{ const v=$('#input').value.trim(); if(v){ $('#input').value=''; handle(v);} };
+$('#input').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ const v=$('#input').value.trim(); if(v){ $('#input').value=''; handle(v);} }
+});
+
+/* ---------------- 20. 自动演示 ---------------- */
+$('#btnAuto').onclick = async ()=>{
+  if(S.auto || S.busy) return;
+  S.auto = true; $('#btnAuto').textContent = '⏳ 演示中…';
+  log('系统','▶ 自动演示开始：按“事前宣教 → 事中拦截 → 事后存证”三条主线走一遍');
+  const seq = [
+    '小福，这个养老投资项目年化15%还保本，靠谱吗？',
+    '有个电话说我涉嫌洗钱，让我把钱转到安全账户',
+    '我想立个遗嘱，把房子留给小儿子',
+  ];
+  for(const t of seq){
+    await sleep(900);
+    const p = handle(t);
+    const clicker = (async ()=>{
+      for(let i=0;i<70;i++){
+        await sleep(150);
+        if($('#maskFace').classList.contains('show')) $('#btnFaceOk').click();
+        else if($('#maskChild').classList.contains('show')) $('#btnChildOk').click();
+        else if($('#maskAuth').classList.contains('show')) $('#btnAuthOk').click();
+        else if(!S.busy && i>6) return;
+      }
+    })();
+    await Promise.race([p, clicker]);
+    await sleep(1300);
+  }
+  S.auto = false; $('#btnAuto').textContent = '▶ 自动演示';
+  log('系统','⏹ 自动演示结束。可以继续自己输入别的指令试试。');
+};
+
+/* ---------------- 21. 接口设置 ---------------- */
+const PRESETS = [
+  {n:'DeepSeek', b:'https://api.deepseek.com/v1', m:'deepseek-chat'},
+  {n:'通义千问', b:'https://dashscope.aliyuncs.com/compatible-mode/v1', m:'qwen-plus'},
+  {n:'智谱 GLM', b:'https://open.bigmodel.cn/api/paas/v4', m:'glm-4-flash'},
+  {n:'Kimi', b:'https://api.moonshot.cn/v1', m:'moonshot-v1-8k'},
+  {n:'硅基流动', b:'https://api.siliconflow.cn/v1', m:'Qwen/Qwen2.5-7B-Instruct'},
+  {n:'本地 Ollama', b:'http://127.0.0.1:11434/v1', m:'qwen2.5:7b'},
+];
+$('#presets').innerHTML = PRESETS.map((p,i)=>`<button class="preset" data-i="${i}">${p.n}</button>`).join('');
+$('#presets').onclick = e=>{
+  const b = e.target.closest('.preset'); if(!b) return;
+  const p = PRESETS[+b.dataset.i];
+  $('#cfgBase').value = p.b; $('#cfgModel').value = p.m;
+};
+const MODE_TIP = {
+  offline:'完全离线，内置规则引擎驱动全部流程，网络不稳时用它答辩保底。',
+  proxy:'通过本地 启动演示.bat 启动的服务转发请求，密钥只留在本机，最稳妥。',
+  direct:'浏览器直接请求大模型服务商。需要服务商允许跨域，密钥会暴露在前端，只建议临时用。'
+};
+$('#cfgMode').onchange = ()=>{ $('#modeTip').textContent = MODE_TIP[$('#cfgMode').value]; };
+
+function loadCfg(){
+  try{ Object.assign(S.cfg, JSON.parse(localStorage.getItem('yad_cfg')||'{}')); }catch(e){}
+  if(location.protocol==='file:' && S.cfg.mode==='proxy') S.cfg.mode='offline';
+  $('#cfgMode').value=S.cfg.mode; $('#cfgBase').value=S.cfg.base; $('#cfgKey').value=S.cfg.key;
+  $('#cfgModel').value=S.cfg.model; $('#cfgTemp').value=S.cfg.temp;
+  $('#modeTip').textContent = MODE_TIP[S.cfg.mode];
+  paintMode();
+}
+function paintMode(){
+  const p = $('#modePill');
+  if(S.cfg.mode==='offline'){ p.className='pill off'; p.textContent='离线演示模式'; }
+  else { p.className='pill on'; p.textContent=(S.cfg.mode==='proxy'?'本地代理模式':'浏览器直连模式')+' · '+S.cfg.model; }
+  setMetric('mModel', S.cfg.mode==='offline'?'OFFLINE':(S.cfg.model||'LLM').slice(0,12));
+}
+$('#btnSettings').onclick = ()=>$('#maskSettings').classList.add('show');
+$('#btnSaveCfg').onclick = ()=>{
+  S.cfg.mode=$('#cfgMode').value; S.cfg.base=$('#cfgBase').value.trim();
+  S.cfg.key=$('#cfgKey').value.trim(); S.cfg.model=$('#cfgModel').value.trim();
+  S.cfg.temp=$('#cfgTemp').value.trim()||'0.2';
+  localStorage.setItem('yad_cfg', JSON.stringify(S.cfg));
+  paintMode(); $('#maskSettings').classList.remove('show');
+  log('系统', `接口设置已更新：方式=${S.cfg.mode}　模型=${S.cfg.model||'-'}　地址=${S.cfg.base||'-'}`);
+};
+$('#btnTest').onclick = async ()=>{
+  const btn=$('#btnTest'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> 测试中…';
+  const mode=$('#cfgMode').value;
+  try{
+    if(mode==='offline'){ await sleep(500); log('系统','连接测试：离线规则引擎就绪 ✓'); }
+    else{
+      const base=$('#cfgBase').value.trim().replace(/\/+$/,'');
+      const url = mode==='proxy' ? '/api/chat' : base+'/chat/completions';
+      const msg=[{role:'user',content:'回复两个字：就绪'}];
+      const payload = mode==='proxy'
+        ? {base, apiKey:$('#cfgKey').value.trim(), model:$('#cfgModel').value.trim()||'deepseek-chat', messages:msg, temperature:0}
+        : {model:$('#cfgModel').value.trim()||'deepseek-chat', messages:msg, temperature:0};
+      const headers={'Content-Type':'application/json'};
+      if(mode==='direct') headers['Authorization']='Bearer '+$('#cfgKey').value.trim();
+      const r = await fetch(url,{method:'POST',headers,body:JSON.stringify(payload)});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const d = await r.json();
+      log('系统','连接测试成功 ✓ 模型回复：'+(d?.choices?.[0]?.message?.content||'').slice(0,40));
+    }
+    btn.textContent='✓ 连接成功';
+  }catch(e){
+    log('系统','连接测试失败 ✗ '+e.message);
+    btn.textContent='✗ 失败：'+e.message.slice(0,26);
+  }
+  setTimeout(()=>{ btn.disabled=false; btn.textContent='测试连接'; }, 2200);
+};
+$$('[data-close]').forEach(b=>b.onclick = ()=>b.closest('.mask').classList.remove('show'));
+$$('.mask').forEach(m=>m.addEventListener('click', e=>{
+  if(e.target===m && !['maskFace','maskChild','maskAuth'].includes(m.id)) m.classList.remove('show');
+}));
+
+/* ---------------- 22. 标签页 ---------------- */
+$$('.tab').forEach(t=>t.onclick = ()=>{
+  $$('.tab').forEach(x=>x.classList.remove('active'));
+  $$('.pane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); $('#pane-'+t.dataset.pane).classList.add('active');
+});
+
+/* ---------------- 23. 校验与导出 ---------------- */
+$('#btnVerify').onclick = ()=>{
+  const tag = $('#verifyTag');
+  if(!S.chain.length){ tag.textContent='还没有存证'; tag.className='tag'; log('存证','校验没做成：存证档案还是空的'); return; }
+  let ok=true, bad=-1;
+  for(let i=0;i<S.chain.length;i++){
+    const b=S.chain[i], prev = i===0?'0'.repeat(64):S.chain[i-1].blockHash;
+    if(b.prevHash!==prev || b.dataHash!==SHA256(JSON.stringify(b.payload))
+       || b.blockHash!==SHA256(`${b.index}|${b.type}|${b.ts}|${b.dataHash}|${prev}`)){ ok=false; bad=i+1; break; }
+  }
+  if(ok){ tag.textContent=`✓ ${S.chain.length} 条全部通过`; tag.className='tag rag';
+    log('存证',`校验通过：${S.chain.length} 条存证重新算了一遍指纹，全部和当初存的一致 ✓`); }
+  else { tag.textContent=`✗ 第 ${bad} 条对不上`; tag.className='tag risk-L3';
+    log('存证',`⚠ 校验不通过：第 ${bad} 条存证的内容被人改过了，这份材料不可信`); }
+};
+$('#btnExport').onclick = ()=>{ exportPackage('panel'); };
+$('#btnReset').onclick = ()=>{
+  if(!confirm('确定重置所有演示数据吗？')) return;
+  S.ledger=[]; S.risks=[]; S.chain=[]; S.childFeed=[]; S.authLog=[]; S.dayUsed=0; S.granted=false;
+  ACCOUNT.pension.paid=6000; ACCOUNT.balance=86432.15;
+  renderLedger(); renderRisk(); renderChain(); renderAuth();
+  setMetric('mChain','0'); setMetric('mRisk','L0'); setMetric('mIntent','--'); setMetric('mLatency','--');
+  $('#verifyTag').textContent='未校验'; $('#verifyTag').className='tag';
+  chat.innerHTML=''; greet();
+  log('系统','演示数据已重置');
+};
+
+/* ---------------- 24. 架构面板 ---------------- */
+$('#archView').innerHTML = `
+  <div class="infobox">本演示台完整复现了技术方案里的<b>四层架构</b>，下面每一层都可以看到它在本页对应的部分。</div>
+  ${[
+    ['交互感知层（具身智能终端）','#1F4E79',
+     '摄像头、麦克风、语音播报、大屏显示；人脸核验、语音对话、视频录制',
+     '本页：麦克风按钮触发语音识别；机器人回答自动语音播报；动钱和录遗嘱时都会先弹本人核验。'],
+    ['智能引擎层','#C00000',
+     '金融风险规则引擎（诈骗关键词 + 异常交易行为）、法律文书录制引导引擎、交易安全网关',
+     '本页：每轮对话先查知识库（左侧日志能看到命中的编号），再让大模型理解意图；风险等级实时计算；L3 直接拦下；动钱必须过三道关。'],
+    ['存证数据层','#548235',
+     '音视频、文字版文书自动生成哈希值和时间戳；加密存储、分级权限、可随时删除',
+     '本页：所有操作和录制都会自动存证，可在“存证档案”里一键校验文件有没有被改过，并导出证据包。'],
+    ['多方应用端口层','#7030A0',
+     '老人端、家属提醒端、银行风控端、法律服务与公证机构授权调取端',
+     '本页：“多方协同”标签页展示四个端口各能看什么；调取存证必须弹窗请老人本人授权，同意或拒绝都会留痕。'],
+  ].map(([n,c,d,r],i)=>`
+    <div class="item" style="border-left-color:${c}">
+      <div class="it-head"><b style="color:${c}">第${i+1}层 · ${n}</b></div>
+      <div>${d}</div>
+      <div class="sug">${r}</div>
+    </div>`).join('')}
+  <div class="item" style="border-left-color:#C7000B">
+    <div class="it-head"><b style="color:#C7000B">三条底线自检</b></div>
+    <div>只存证、不鉴真 ✓　机器人不碰账户凭证 ✓　资金必过三道关 ✓</div>
+    <div class="sug">本页里，大模型只输出一张“要做什么”的清单，所有资金动作都由业务代码在三道关之后执行；
+      聊天记录、业务回单、文件指纹共同构成一条可回放的完整记录。</div>
+  </div>`;
+
+/* ---------------- 25. 启动 ---------------- */
+function greet(){
+  addBot('大娘您好，我是小安。您要查账户、问理财靠不靠谱，还是想把遗嘱录下来？跟我说一声就行。',
+    `<span class="tag intent">system:ready</span><span class="tag">会话 ${S.sessionId}</span>`);
+}
+function boot(){
+  loadCfg();
+  if(location.protocol==='file:') $('#fileBanner').classList.add('show');
+  log('系统',`银安盾技术演示台已启动　会话编号 ${S.sessionId}`);
+  log('系统','四层架构装载完成：交互感知层 / 智能引擎层 / 存证数据层 / 多方应用端口层');
+  log('引擎',`知识库装载完成：${RAG_KB.length} 条资料（养老非法集资案例、反诈识别要点、遗嘱与存证规范、银行账户规则）`);
+  log('引擎',`风险规则就绪：单日累计限额 ${ACCOUNT.dayLimit} 元；关键词 + 异常交易行为两条线同时判断`);
+  log('存证','存证数据层已就绪，可以开始记录');
+  greet();
+}
+boot();
+</script>
+</body>
+</html>
